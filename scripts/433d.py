@@ -4,6 +4,7 @@ import logging
 from argparse import ArgumentParser
 from logging.handlers import RotatingFileHandler
 from queue import Queue
+from threading import Thread
 
 from py433 import (
     server,
@@ -44,7 +45,14 @@ rootLogger.addHandler(fileHandler)
 q = Queue()
 
 tx = transmitter(q, messages=conf.messages, pin=conf.tx_pin, protocol=conf.tx_protocol, pulse=conf.tx_pulse)
-tx.run()
+t1 = Thread(target=tx.run)
+t1.daemon = True
+t1.start()
 
 srv = server(port=args.port or conf.port, handler=lambda m: q.put(m))
-srv.start()
+t2 = Thread(target=srv.start)
+t2.daemon = True
+t2.start()
+
+t1.join()
+t2.join()

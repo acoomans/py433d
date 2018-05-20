@@ -3,7 +3,6 @@ from signal import (
     signal,
     SIGINT
 )
-from threading import Thread
 from time import sleep
 from typing import List
 
@@ -24,9 +23,7 @@ class transmitter:
 
     def run(self):
         logging.debug("Transmitter ready")
-        t = Thread(target=self.consume)
-        t.daemon = True
-        t.start()
+        self.consume()
 
     def consume(self):
         while True:
