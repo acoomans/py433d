@@ -1,6 +1,7 @@
 .idea
 dist
 *.egg-info
+.eggs
 *.pyc
 venv
 virtualenv
