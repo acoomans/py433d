@@ -10,7 +10,7 @@ with open(path.join(here, 'requirements.txt'), encoding='utf-8') as f:
     requirements = f.read()
 
 setup(
-    name='py433',
+    name='py433d',
     version=0.1,
     author='Arnaud Coomans',
     author_email='arnaud.coomans@gmail.com',
@@ -34,6 +34,6 @@ setup(
     install_requires=requirements,
     scripts=['scripts/433c.py', 'scripts/433d.py'],
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
-    package_data={'py433': ['433d.conf']},
+    package_data={'py433d': ['433d.conf']},
     include_package_data=True,
 )
