@@ -48,10 +48,13 @@ class transmitter:
             return self.code_for_message(message[1:], mapping.get(message[0], {}))
         else:
             item = mapping.get(message[0])
-            if isinstance(item, int):
-                code = item
-                repeat = 1
-            elif isinstance(item, dict):
+            if isinstance(item, dict):
                 code = item.get("code")
                 repeat = item.get("repeat", 1)
+            elif isinstance(item, int) or item.isdigit():
+                code = int(item)
+                repeat = 1
+            elif isinstance(message[0], int) or message[0].isdigit():
+                code = int(message[0])
+                repeat = 1
             return code, repeat
