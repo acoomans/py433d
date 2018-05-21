@@ -31,7 +31,7 @@ class transmitter:
             code, repeat = self.code(message.split())
             if code:
                 for i in range(repeat):
-                    # self.rfdevice.tx_code(1398531, self.protocol, self.pulse)
+                    self.rfdevice.tx_code(code, self.protocol, self.pulse)
                     logging.debug("Transmitting '" + str(code) + "'")
                     sleep(0.01)
             else:
