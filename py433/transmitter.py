@@ -52,7 +52,7 @@ class transmitter:
             if isinstance(item, dict):
                 code = item.get("code")
                 repeat = item.get("repeat", 1)
-            elif isinstance(item, int) or item.isdigit():
+            elif isinstance(item, int) or (isinstance(item, str) and item.isdigit()):
                 code = int(item)
                 repeat = 1
             elif isinstance(message[0], int) or message[0].isdigit():
