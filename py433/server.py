@@ -23,10 +23,16 @@ class server:
         self.running = True
 
         while self.running:
-            connection, client_address = self.sock.accept()
+            connection = None
+            try:
+                connection, client_address = self.sock.accept()
+            except OSError as e:
+                if self.running:
+                    raise e
+
             try:
                 data = b''
-                while True:
+                while self.running:
                     buffer = connection.recv(256)
                     if buffer:
                         data += buffer
@@ -36,7 +42,9 @@ class server:
                 logging.debug("Received '" + content + "'")
                 self.handler(content)
             finally:
-                connection.close()
+                if connection:
+                    connection.close()
 
     def stop(self):
         self.running = False
+        self.sock.shutdown(2)

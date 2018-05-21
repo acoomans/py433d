@@ -28,14 +28,15 @@ class transmitter:
     def consume(self):
         while self.running:
             message = self.queue.get()
-            code, repeat = self.code(message.split())
-            if code:
-                for i in range(repeat):
-                    self.rfdevice.tx_code(code, self.protocol, self.pulse)
-                    logging.debug("Transmitting '" + str(code) + "'")
-                    sleep(0.01)
-            else:
-                logging.warning("Unrecognized message '" + message + "'")
+            if self.running:
+                code, repeat = self.code(message.split())
+                if code:
+                    for i in range(repeat):
+                        self.rfdevice.tx_code(code, self.protocol, self.pulse)
+                        logging.debug("Transmitting '" + str(code) + "'")
+                        sleep(0.01)
+                else:
+                    logging.warning("Unrecognized message '" + message + "'")
 
     def code(self, message: List[str]):
         return self.code_for_message(message, self.messages)

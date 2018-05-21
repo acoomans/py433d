@@ -29,43 +29,51 @@ if args.version:
     print(__version__)
     exit(0)
 
-conf = configuration.load(filename=args.conf)
-
-rootLogger = logging.getLogger()
-rootLogger.setLevel(logging.DEBUG)
-
-logFormatter = logging.Formatter("%(asctime)-15s - [%(levelname)s] %(module)s: %(message)s")
-
-rootLogger.handlers[0].setFormatter(logFormatter)
-
-# consoleHandler = logging.StreamHandler()
-# consoleHandler.setFormatter(logFormatter)
-# rootLogger.addHandler(consoleHandler)
-
-fileHandler = logging.handlers.RotatingFileHandler(args.log or conf.log_filename, maxBytes=(1024 * 1024), backupCount=7)
-fileHandler.setFormatter(logFormatter)
-rootLogger.addHandler(fileHandler)
-
-logging.info("433d server started")
-
-q = Queue()
-
-tx = transmitter(q, messages=conf.messages, pin=conf.tx_pin, protocol=conf.tx_protocol, pulse=conf.tx_pulse)
-t1 = Thread(target=tx.run)
-t1.daemon = True
-t1.start()
-
-srv = server(port=args.port or conf.port, handler=lambda m: q.put(m))
-t2 = Thread(target=srv.run)
-t2.daemon = True
-t2.start()
+def reload():
+    tx.stop()
+    srv.stop()
+    conf.stop()
 
 def exithandler(self, signal):
     tx.stop()
     srv.stop()
+    conf.stop()
     logging.info("433d server stopped")
 
 signal(SIGINT, exithandler)
 
-t1.join()
-t2.join()
+while True:
+    conf = configuration.load(filename=args.conf)
+    conf.watch(reload)
+
+    rootLogger = logging.getLogger()
+    rootLogger.setLevel(logging.DEBUG)
+
+    logFormatter = logging.Formatter("%(asctime)-15s - [%(levelname)s] %(module)s: %(message)s")
+
+    rootLogger.handlers[0].setFormatter(logFormatter)
+
+    # consoleHandler = logging.StreamHandler()
+    # consoleHandler.setFormatter(logFormatter)
+    # rootLogger.addHandler(consoleHandler)
+
+    fileHandler = logging.handlers.RotatingFileHandler(args.log or conf.log_filename, maxBytes=(1024 * 1024), backupCount=7)
+    fileHandler.setFormatter(logFormatter)
+    rootLogger.addHandler(fileHandler)
+
+    logging.info("433d server started")
+
+    q = Queue()
+
+    tx = transmitter(q, messages=conf.messages, pin=conf.tx_pin, protocol=conf.tx_protocol, pulse=conf.tx_pulse)
+    t1 = Thread(target=tx.run)
+    t1.daemon = True
+    t1.start()
+
+    srv = server(port=args.port or conf.port, handler=lambda m: q.put(m))
+    t2 = Thread(target=srv.run)
+    t2.daemon = True
+    t2.start()
+
+    t1.join()
+    t2.join()
