@@ -11,7 +11,7 @@ from signal import (
 from threading import Thread
 
 from py433 import (
-    server,
+    tcp_server,
     transmitter,
     configuration,
     __version__,
@@ -70,7 +70,7 @@ while True:
     t1.daemon = True
     t1.start()
 
-    srv = server(port=args.port or conf.port, handler=lambda m: q.put(m))
+    srv = tcp_server(port=args.port or conf.port, handler=lambda m: q.put(m))
     t2 = Thread(target=srv.run)
     t2.daemon = True
     t2.start()

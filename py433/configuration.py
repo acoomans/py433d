@@ -29,7 +29,7 @@ class configuration:
         new_instance.tx_pin = conf.get("radio").get("tx_pin", 17)
         new_instance.tx_protocol = conf.get("radio").get("tx_protocol", 1)
         new_instance.tx_pulse = conf.get("radio").get("tx_pulse", 180)
-        new_instance.port = conf.get("server").get("port", defaults.port)
+        new_instance.port = conf.get("tcp_server").get("port", defaults.port)
         new_instance.log_filename = conf.get("log").get("filename", "433d.log")
         new_instance.messages = conf.get("messages")
 

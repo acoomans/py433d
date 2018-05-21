@@ -8,7 +8,7 @@ from socket import (
 from . import defaults
 
 
-class server:
+class tcp_server:
 
     def __init__(self, host='localhost', port=defaults.port, handler=lambda x: print(x)):
         self.host = host
