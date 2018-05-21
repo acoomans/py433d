@@ -22,7 +22,7 @@ class configuration:
             loaded = True
         except Exception as e:
             print(e)
-        logging.debug("loaded config from file '" + filename + "':" + str(conf))
+        logging.info("Loaded config from file '" + filename + "':" + str(conf))
 
         new_instance = cls()
         new_instance.filename = filename
@@ -31,6 +31,23 @@ class configuration:
         new_instance.tx_pulse = conf.get("radio").get("tx_pulse", 180)
         new_instance.port = conf.get("tcp_server").get("port", defaults.port)
         new_instance.log_filename = conf.get("log").get("filename", "433d.log")
+
+        level = conf.get("log").get("level", "INFO").upper()
+        if level == "CRITICAL":
+            new_instance.log_level = logging.CRITICAL
+        elif level == "FATAL":
+            new_instance.log_level = logging.FATAL
+        elif level == "ERROR":
+            new_instance.log_level = logging.ERROR
+        elif level == "WARNING":
+            new_instance.log_level = logging.WARNING
+        elif level == "WARN":
+            new_instance.log_level = logging.WARN
+        elif level == "INFO":
+            new_instance.log_level = logging.INFO
+        elif level == "DEBUG":
+            new_instance.log_level = logging.DEBUG
+
         new_instance.messages = conf.get("messages")
 
         return new_instance

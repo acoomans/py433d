@@ -16,7 +16,7 @@ class tcp_server:
         self.handler = handler
 
     def run(self):
-        logging.debug("Server listening on '" + str(self.port) + "'")
+        logging.info("Listening on '" + str(self.port) + "'")
         self.sock = socket(AF_INET, SOCK_STREAM)
         self.sock.bind((self.host, self.port))
         self.sock.listen(1)

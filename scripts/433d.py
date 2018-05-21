@@ -38,7 +38,7 @@ def exithandler(self, signal):
     tx.stop()
     srv.stop()
     conf.stop()
-    logging.info("433d server stopped")
+    logging.info("Server stopped")
 
 signal(SIGINT, exithandler)
 
@@ -47,21 +47,23 @@ while True:
     conf.watch(reload)
 
     rootLogger = logging.getLogger()
-    rootLogger.setLevel(logging.DEBUG)
+    rootLogger.setLevel(conf.log_level)
 
     logFormatter = logging.Formatter("%(asctime)-15s - [%(levelname)s] %(module)s: %(message)s")
 
-    rootLogger.handlers[0].setFormatter(logFormatter)
+    rootLogger.handlers = []
 
-    # consoleHandler = logging.StreamHandler()
-    # consoleHandler.setFormatter(logFormatter)
-    # rootLogger.addHandler(consoleHandler)
+    # rootLogger.handlers[0].setFormatter(logFormatter)
+
+    consoleHandler = logging.StreamHandler()
+    consoleHandler.setFormatter(logFormatter)
+    rootLogger.addHandler(consoleHandler)
 
     fileHandler = logging.handlers.RotatingFileHandler(args.log or conf.log_filename, maxBytes=(1024 * 1024), backupCount=7)
     fileHandler.setFormatter(logFormatter)
     rootLogger.addHandler(fileHandler)
 
-    logging.info("433d server started")
+    logging.info("Server started")
 
     q = Queue()
 
