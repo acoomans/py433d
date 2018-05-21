@@ -4,6 +4,10 @@ import logging
 from argparse import ArgumentParser
 from logging.handlers import RotatingFileHandler
 from queue import Queue
+from signal import (
+    signal,
+    SIGINT
+)
 from threading import Thread
 
 from py433 import (
@@ -42,6 +46,8 @@ fileHandler = logging.handlers.RotatingFileHandler(args.log or conf.log_filename
 fileHandler.setFormatter(logFormatter)
 rootLogger.addHandler(fileHandler)
 
+logging.info("433d server started")
+
 q = Queue()
 
 tx = transmitter(q, messages=conf.messages, pin=conf.tx_pin, protocol=conf.tx_protocol, pulse=conf.tx_pulse)
@@ -50,9 +56,16 @@ t1.daemon = True
 t1.start()
 
 srv = server(port=args.port or conf.port, handler=lambda m: q.put(m))
-t2 = Thread(target=srv.start)
+t2 = Thread(target=srv.run)
 t2.daemon = True
 t2.start()
+
+def exithandler(self, signal):
+    tx.stop()
+    srv.stop()
+    logging.info("433d server stopped")
+
+signal(SIGINT, exithandler)
 
 t1.join()
 t2.join()

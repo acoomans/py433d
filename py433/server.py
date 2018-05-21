@@ -15,13 +15,14 @@ class server:
         self.port = port
         self.handler = handler
 
-    def start(self):
+    def run(self):
         logging.debug("Server listening on '" + str(self.port) + "'")
         self.sock = socket(AF_INET, SOCK_STREAM)
         self.sock.bind((self.host, self.port))
         self.sock.listen(1)
+        self.running = True
 
-        while True:
+        while self.running:
             connection, client_address = self.sock.accept()
             try:
                 data = b''
@@ -36,3 +37,6 @@ class server:
                 self.handler(content)
             finally:
                 connection.close()
+
+    def stop(self):
+        self.running = False

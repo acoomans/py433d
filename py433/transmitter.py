@@ -1,8 +1,4 @@
 import logging
-from signal import (
-    signal,
-    SIGINT
-)
 from time import sleep
 from typing import List
 
@@ -12,7 +8,6 @@ from rpi_rf import RFDevice
 class transmitter:
 
     def __init__(self, queue, messages=dict(), pin=17, protocol=1, pulse=180):
-        signal(SIGINT, self.exithandler)
         self.rfdevice = RFDevice(pin)
         self.rfdevice.enable_tx()
         self.protocol = protocol
@@ -22,11 +17,16 @@ class transmitter:
         logging.debug("Loaded messages mapping: '" + str(self.messages) + "'")
 
     def run(self):
+        self.running = True
         logging.debug("Transmitter ready")
         self.consume()
 
+    def stop(self):
+        self.running = False
+        self.rfdevice.cleanup()
+
     def consume(self):
-        while True:
+        while self.running:
             message = self.queue.get()
             code, repeat = self.code(message.split())
             if code:
@@ -55,7 +55,3 @@ class transmitter:
                 code = item.get("code")
                 repeat = item.get("repeat", 1)
             return code, repeat
-
-
-    def exithandler(self, signal, frame):
-        self.rfdevice.cleanup()
