@@ -47,4 +47,5 @@ class tcp_server:
 
     def stop(self):
         self.running = False
-        self.sock.shutdown(2)
+        if self.sock:
+            self.sock.shutdown(2)
