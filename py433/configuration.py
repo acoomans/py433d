@@ -72,7 +72,10 @@ class configuration:
                 @staticmethod
                 def on_any_event(event):
                     if event.src_path == filename:
-                        callback()
+                        try:
+                            callback()
+                        except:
+                            pass
 
             self.observer = Observer()
             self.observer.schedule(Handler(), os.path.dirname(os.path.realpath(self.filename)))

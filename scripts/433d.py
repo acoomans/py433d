@@ -31,39 +31,42 @@ if args.version:
     print(__version__)
     exit(0)
 
-def reload():
-    tx.stop()
-    srv.stop()
-    conf.stop()
-
-def exithandler(self, signal):
-    tx.stop()
-    srv.stop()
-    conf.stop()
-    logging.info("Server stopped")
-
-signal(SIGINT, exithandler)
-
-while True:
-    conf = configuration.load(filename=args.conf)
-    conf.watch(reload)
-
+def setup_logging(conf):
     rootLogger = logging.getLogger()
+    rootLogger.handlers = []
     rootLogger.setLevel(conf.log_level)
 
     logFormatter = logging.Formatter("%(asctime)-15s - [%(levelname)s] %(module)s: %(message)s")
-
-    rootLogger.handlers = []
-
-    # rootLogger.handlers[0].setFormatter(logFormatter)
 
     consoleHandler = logging.StreamHandler()
     consoleHandler.setFormatter(logFormatter)
     rootLogger.addHandler(consoleHandler)
 
-    fileHandler = logging.handlers.RotatingFileHandler(args.log or conf.log_filename, maxBytes=(1024 * 1024), backupCount=7)
+    fileHandler = logging.handlers.RotatingFileHandler(args.log or conf.log_filename, maxBytes=(1024 * 1024),
+                                                       backupCount=7)
     fileHandler.setFormatter(logFormatter)
     rootLogger.addHandler(fileHandler)
+
+def stop_all():
+    rx.stop()
+    tx.stop()
+    srv.stop()
+    conf.stop()
+
+running = True
+
+def exithandler(self, signal):
+    running = False
+    stop_all()
+    logging.info("Server stopped")
+
+signal(SIGINT, exithandler)
+
+while running:
+    conf = configuration.load(filename=args.conf)
+    conf.watch(stop_all)
+
+    setup_logging(conf)
 
     logging.info("Server started")
 
