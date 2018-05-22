@@ -7,4 +7,4 @@ from .transmitter import transmitter
 from .receiver import receiver
 from .mqtt import mqtt
 
-__version__ = 0.2
+__version__ = 0.3

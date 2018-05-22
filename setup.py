@@ -11,7 +11,7 @@ with open(path.join(here, 'requirements.txt'), encoding='utf-8') as f:
 
 setup(
     name='py433d',
-    version=0.2,
+    version=0.3,
     author='Arnaud Coomans',
     author_email='arnaud.coomans@gmail.com',
     description='A server for 433MHz (and 315Mhz) communication.',
