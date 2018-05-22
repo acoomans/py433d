@@ -14,6 +14,7 @@ from py433 import (
     tcp_server,
     transmitter,
     receiver,
+    mqtt,
     configuration,
     __version__,
     defaults
@@ -78,7 +79,16 @@ while True:
     t2.daemon = True
     t2.start()
 
+    m = None
     rx_handler = lambda x: print(x)
+    if conf.mqtt_host:
+        m = mqtt(host=conf.mqtt_host,
+                 port=conf.mqtt_port,
+                 username=conf.mqtt_username,
+                 password=conf.mqtt_password,
+                 codes=conf.codes)
+        rx_handler = lambda x: m.post(x)
+
     rx = receiver(pin=conf.rx_pin, handler=rx_handler)
     t3 = Thread(target=rx.run)
     t3.daemon = True

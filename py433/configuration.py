@@ -53,7 +53,14 @@ class configuration:
         elif level == "DEBUG":
             new_instance.log_level = logging.DEBUG
 
-        new_instance.messages = conf.get("messages")
+        new_instance.messages = conf.get("messages", dict())
+
+        new_instance.mqtt_host = conf.get("mqtt").get("host", None)
+        new_instance.mqtt_port = conf.get("mqtt").get("port", None)
+        new_instance.mqtt_username = conf.get("mqtt").get("username", None)
+        new_instance.mqtt_password = conf.get("mqtt").get("password", None)
+
+        new_instance.codes = conf.get("codes", dict())
 
         return new_instance
 
