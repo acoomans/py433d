@@ -25,13 +25,18 @@ class configuration:
         logging.info("Loaded config from file '" + filename + "':" + str(conf))
 
         new_instance = cls()
+
         new_instance.filename = filename
+
         new_instance.tx_pin = conf.get("radio").get("tx_pin", 17)
         new_instance.tx_protocol = conf.get("radio").get("tx_protocol", 1)
         new_instance.tx_pulse = conf.get("radio").get("tx_pulse", 180)
-        new_instance.port = conf.get("tcp_server").get("port", defaults.port)
-        new_instance.log_filename = conf.get("log").get("filename", "433d.log")
 
+        new_instance.rx_pin = conf.get("radio").get("rx_pin", 27)
+
+        new_instance.port = conf.get("tcp_server").get("port", defaults.port)
+
+        new_instance.log_filename = conf.get("log").get("filename", "433d.log")
         level = conf.get("log").get("level", "INFO").upper()
         if level == "CRITICAL":
             new_instance.log_level = logging.CRITICAL

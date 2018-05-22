@@ -13,6 +13,7 @@ from threading import Thread
 from py433 import (
     tcp_server,
     transmitter,
+    receiver,
     configuration,
     __version__,
     defaults
@@ -77,5 +78,12 @@ while True:
     t2.daemon = True
     t2.start()
 
+    rx_handler = lambda x: print(x)
+    rx = receiver(pin=conf.rx_pin, handler=rx_handler)
+    t3 = Thread(target=rx.run)
+    t3.daemon = True
+    t3.start()
+
     t1.join()
     t2.join()
+    t3.join()
